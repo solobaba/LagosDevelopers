@@ -77,8 +77,8 @@ class MainActivity : AppCompatActivity() {
         if (!NetworkUtils.isConnectionAvailable(this)) {
             val snackBar: Snackbar = Snackbar.make(
                 binding.developersListLayout,
-                "No Internet Connection." +
-                        "\n Please, turn on your internet connection and press the Okay button",
+                "No Internet Connection. Please, turn on your " +
+                        "\ninternet connection and press the Okay button",
                 Snackbar.LENGTH_INDEFINITE
             )
             snackBar.setActionTextColor(ContextCompat.getColor(this, R.color.white))
