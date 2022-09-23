@@ -4,40 +4,26 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
-import com.solomon.lagosdevelopers.R
 import com.solomon.lagosdevelopers.databinding.ActivityDeveloperDetailsBinding
 import com.solomon.lagosdevelopers.model.response.DevelopersItem
-import com.solomon.lagosdevelopers.viewmodel.DevelopersViewModel
-import com.solomon.lagosdevelopers.viewmodel.ViewModelFactoryForAny
+import kotlinx.android.synthetic.main.activity_developer_details.*
 import timber.log.Timber
 
 class DeveloperDetailsActivity : AppCompatActivity() {
-
-    private val viewModel by lazy {
-        ViewModelProvider(
-            this,
-            ViewModelFactoryForAny("Repository")
-        )[DevelopersViewModel::class.java]
-    }
 
     companion object {
         const val DEVELOPER_DETAILS = "developersDetails"
     }
 
-    lateinit var binding: ActivityDeveloperDetailsBinding
     lateinit var developersItem: DevelopersItem
     private var position: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_developer_details)
-
-        binding.viewModel = viewModel
-        binding.lifecycleOwner = this
+        val binding = ActivityDeveloperDetailsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         if (intent.hasExtra(DEVELOPER_DETAILS)) {
             developersItem = intent.getSerializableExtra(DEVELOPER_DETAILS) as DevelopersItem
@@ -53,14 +39,14 @@ class DeveloperDetailsActivity : AppCompatActivity() {
     private fun initializeData(developersItem: DevelopersItem) {
         val devImage: DevelopersItem = developersItem
         val uri: Uri = Uri.parse(devImage.avatar_url)
-        Glide.with(this).load(uri).into(binding.developerImg)
+        Glide.with(this).load(uri).into(developerImg)
 
-        binding.devLogin.text = developersItem.login
-        binding.devId.text = developersItem.id.toString()
-        binding.devUrl.text = developersItem.url
-        binding.devScore.text = developersItem.score.toString()
-        binding.devType.text = developersItem.type
-        binding.confirmBtn.setOnClickListener{
+        devLogin.text = developersItem.login
+        devId.text = developersItem.id.toString()
+        devUrl.text = developersItem.url
+        devScore.text = developersItem.score.toString()
+        devType.text = developersItem.type
+        confirmBtn.setOnClickListener{
             onBackPressed()
         }
     }

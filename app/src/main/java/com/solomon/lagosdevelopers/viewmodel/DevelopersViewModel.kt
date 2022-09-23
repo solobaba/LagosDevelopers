@@ -1,19 +1,23 @@
 package com.solomon.lagosdevelopers.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.solomon.lagosdevelopers.model.repository.Repository
+import com.solomon.lagosdevelopers.model.response.DevelopersItem
 import com.solomon.lagosdevelopers.model.response.LagosDevelopersResponse
-import com.solomon.lagosdevelopers.model.service.ResponseFromServer
-import com.solomon.lagosdevelopers.model.service.Service
+import com.solomon.lagosdevelopers.utils.ResponseFromServer
+import com.solomon.lagosdevelopers.model.service.ServiceModule
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 class DevelopersViewModel @Inject constructor(
     private val repository: Repository
     ) : ViewModel(), ViewModelHelpers {
+
+    private val _loading = MutableStateFlow(false)
+    private val _data = MutableStateFlow<Pair<List<DevelopersItem>, String?>>(Pair(emptyList(), null))
+    val data = _data.asStateFlow()
 
     private val error = MutableLiveData<Throwable?>()
     val errorWatcher: LiveData<Throwable?>
@@ -23,8 +27,9 @@ class DevelopersViewModel @Inject constructor(
     val progressDialogLive: LiveData<Pair<Boolean, String>>
         get() = progressDialog
 
-    fun getAllCardTransactions(
-    ): LiveData<LagosDevelopersResponse?> {
+    val getAllDevelopers = repository.getDevelopers().asLiveData()
+
+    fun getAllCardTransactions(): LiveData<LagosDevelopersResponse?> {
         val getAllCardTransactions = MutableLiveData<LagosDevelopersResponse?>()
         viewModelScope.launch {
             try {
@@ -41,10 +46,29 @@ class DevelopersViewModel @Inject constructor(
                     }
                 }
             } catch (t: Throwable) {
-                setError(throwable = Service.getUserFriendlyException(t))
+                setError(throwable = ServiceModule.getUserFriendlyException(t))
             }
         }
         return getAllCardTransactions
+    }
+
+    fun getAllDevelopers() {
+        viewModelScope.launch {
+            repository.getDevelopersInfo()
+                .onStart {
+                    _loading.value = true
+                }.catch { e: Throwable ->
+                    setNewsData(message = e.message ?: "Something went wrong.")
+                }.collectLatest {
+                    setNewsData(it)
+                    Timber.tag("DevelopersList").e(it.toString())
+                }
+        }
+    }
+
+    private fun setNewsData(newsList: List<DevelopersItem> = emptyList(), message: String? = null) {
+        _data.value = Pair(newsList, message)
+        _loading.value = false
     }
 
     override fun setError(throwable: Throwable) {

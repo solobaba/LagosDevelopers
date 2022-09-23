@@ -29,6 +29,15 @@
             tools:ignore="ContentDescription" />
     </androidx.cardview.widget.CardView>
 
+    <ImageView
+        android:id="@+id/favIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_star_border_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription"/>
+
     <TextView
         android:id="@+id/started_text"
         android:layout_width="wrap_content"

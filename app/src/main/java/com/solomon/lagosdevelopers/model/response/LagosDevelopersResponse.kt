@@ -1,5 +1,7 @@
 package com.solomon.lagosdevelopers.model.response
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import java.io.Serializable
 
 data class LagosDevelopersResponse(
@@ -8,7 +10,9 @@ data class LagosDevelopersResponse(
     val total_count: Int? = 0
 ): Serializable
 
+@Entity(tableName = "developersEntity")
 data class DevelopersItem(
+    @PrimaryKey val id: Int? = 0,
     val avatar_url: String? = "N/A",
     val events_url: String? = "N/A",
     val followers_url: String? = "N/A",
@@ -16,7 +20,6 @@ data class DevelopersItem(
     val gists_url: String? = "N/A",
     val gravatar_id: String? = "N/A",
     val html_url: String? = "N/A",
-    val id: Int? = 0,
     val login: String? = "N/A",
     val node_id: String? = "N/A",
     val organizations_url: String? = "N/A",

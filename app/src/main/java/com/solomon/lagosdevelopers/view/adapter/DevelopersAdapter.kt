@@ -1,26 +1,22 @@
 package com.solomon.lagosdevelopers.view.adapter
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import com.solomon.lagosdevelopers.R
+import com.solomon.lagosdevelopers.databinding.AdapterDevelopersListItemBinding
 import com.solomon.lagosdevelopers.model.response.DevelopersItem
 import com.solomon.lagosdevelopers.view.ui.DeveloperDetailsActivity
 
-class DevelopersAdapter(
-    var context: Context,
-    var developersDetails: MutableList<DevelopersItem>
-) : RecyclerView.Adapter<DevelopersAdapter.MyViewHolder>() {
+class DevelopersAdapter(var developersDetails: MutableList<DevelopersItem>) :
+    ListAdapter<DevelopersItem, DevelopersAdapter.MyViewHolder>(DevelopersComparator()) {
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateList(list: MutableList<DevelopersItem>) {
@@ -32,35 +28,67 @@ class DevelopersAdapter(
         parent: ViewGroup,
         viewType: Int
     ): MyViewHolder {
-        val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.adapter_developers_list_item, parent, false)
-        return MyViewHolder(view)
+        val binding = AdapterDevelopersListItemBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return MyViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val devImage: DevelopersItem = developersDetails[position]
-        val uri: Uri = Uri.parse(devImage.avatar_url)
-        Glide.with(context).load(uri).into(holder.developerImage)
-        holder.developerID.text = developersDetails[position].id.toString()
-        holder.developerUrl.text = developersDetails[position].url
-        holder.developerType.text = developersDetails[position].type
-
-        holder.layout.setOnClickListener {
-            val intent = Intent(context, DeveloperDetailsActivity::class.java)
-            intent.putExtra(DeveloperDetailsActivity.DEVELOPER_DETAILS, developersDetails[position])
-            context.startActivity(intent)
+        val currentItem = getItem(position)
+        if (currentItem != null) {
+            holder.bind(currentItem)
         }
     }
 
-    override fun getItemCount(): Int {
-        return developersDetails.size
-    }
+    class MyViewHolder(private val binding: AdapterDevelopersListItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        var starred = false
 
-    class MyViewHolder(var contentView: View) : RecyclerView.ViewHolder(contentView) {
-        var layout: ConstraintLayout = contentView.findViewById(R.id.container_list)
-        var developerImage: ImageView = contentView.findViewById(R.id.developer_img)
-        var developerID: TextView = contentView.findViewById(R.id.developer_id)
-        var developerUrl: TextView = contentView.findViewById(R.id.developer_url)
-        var developerType: TextView = contentView.findViewById(R.id.developer_type)
+        @SuppressLint("UseCompatLoadingForDrawables")
+        fun bind(developersDetails: DevelopersItem) {
+            binding.apply {
+                Glide.with(itemView)
+                    .load(developersDetails.avatar_url)
+                    .into(developerImg)
+
+                developerId.text = developersDetails.id.toString()
+                developerUrl.text = developersDetails.url
+                developerType.text = developersDetails.type
+                containerList.setOnClickListener {
+                    val intent = Intent(itemView.context, DeveloperDetailsActivity::class.java)
+                    intent.putExtra(DeveloperDetailsActivity.DEVELOPER_DETAILS, developersDetails)
+                    itemView.context.startActivity(intent)
+                }
+
+                favIcon.setOnClickListener {
+                    if (starred) {
+                        val starEmpty: Drawable =
+                            itemView.resources.getDrawable(R.drawable.ic_baseline_star_border_24)
+                        starEmpty.setBounds(0, 0, 24, 24)
+                        favIcon.background = starEmpty
+                    } else {
+                        val startFilled: Drawable =
+                            itemView.resources.getDrawable(R.drawable.ic_baseline_star_rate_24)
+                        startFilled.setBounds(0, 0, 24, 24)
+                        favIcon.background = startFilled
+
+                        Snackbar.make(itemView, "Marked as favorite profile", Snackbar.LENGTH_LONG)
+                            .show()
+                    }
+                    starred = !starred
+                }
+            }
+        }
     }
+}
+
+class DevelopersComparator : DiffUtil.ItemCallback<DevelopersItem>() {
+    override fun areItemsTheSame(oldItem: DevelopersItem, newItem: DevelopersItem) =
+        oldItem == newItem
+
+    override fun areContentsTheSame(oldItem: DevelopersItem, newItem: DevelopersItem) =
+        oldItem == newItem
 }

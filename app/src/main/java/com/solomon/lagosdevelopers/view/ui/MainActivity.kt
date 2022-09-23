@@ -6,8 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,20 +18,19 @@ import com.solomon.lagosdevelopers.model.response.DevelopersItem
 import com.solomon.lagosdevelopers.utils.NetworkUtils
 import com.solomon.lagosdevelopers.view.adapter.DevelopersAdapter
 import com.solomon.lagosdevelopers.viewmodel.DevelopersViewModel
-import com.solomon.lagosdevelopers.viewmodel.ViewModelFactoryForAny
+import dagger.android.AndroidInjection
+import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import java.util.*
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private val viewModel by lazy {
-        ViewModelProvider(
-            this,
-            ViewModelFactoryForAny("Repository")
-        )[DevelopersViewModel::class.java]
+    val viewModel by lazy {
+        ViewModelProvider(this, viewModelFactory)[DevelopersViewModel::class.java]
     }
-
-    lateinit var binding: ActivityMainBinding
 
     private lateinit var developersAdapter: DevelopersAdapter
     private var developersItem: MutableList<DevelopersItem> = ArrayList()
@@ -54,15 +53,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.activity_main)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        AndroidInjection.inject(this)
+        val binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        binding.viewModel = viewModel
-        binding.lifecycleOwner = this
-
-        binding.developersRecyclerList.layoutManager = LinearLayoutManager(this)
-        developersAdapter = DevelopersAdapter(this, developersItem)
-        binding.developersRecyclerList.adapter = developersAdapter
+        developersRecyclerList.layoutManager = LinearLayoutManager(this)
+        developersAdapter = DevelopersAdapter(developersItem)
+        developersRecyclerList.adapter = developersAdapter
 
         fetchDevelopersList()
 
@@ -76,7 +73,7 @@ class MainActivity : AppCompatActivity() {
     private fun fetchDevelopersList() {
         if (!NetworkUtils.isConnectionAvailable(this)) {
             val snackBar: Snackbar = Snackbar.make(
-                binding.developersListLayout,
+                developersListLayout,
                 "No Internet Connection. Please, turn on your " +
                         "\ninternet connection and press the Okay button",
                 Snackbar.LENGTH_INDEFINITE
@@ -90,14 +87,16 @@ class MainActivity : AppCompatActivity() {
             snackBar.show()
         } else {
             mProgressDialog.show()
+
             viewModel.getAllCardTransactions().observe(this, Observer { result ->
+                Toast.makeText(this, "hereeee", Toast.LENGTH_LONG).show()
                 mProgressDialog.dismiss()
                 when {
                     !result?.items.isNullOrEmpty() -> {
                         developersItem.clear()
                         result?.items?.let {
                             developersItem.addAll(it)
-                            developersAdapter.updateList(developersItem)
+                            developersAdapter.submitList(developersItem)    //updateList(developersItem)
                             Timber.e(result.toString())
                         }
                     }
@@ -105,7 +104,7 @@ class MainActivity : AppCompatActivity() {
                         mProgressDialog.dismiss()
                         val response = result
                         val snackBar: Snackbar = Snackbar.make(
-                            binding.developersListLayout,
+                            developersListLayout,
                             "Data not currently available. \n" +
                                     "Please, try again.", Snackbar.LENGTH_INDEFINITE
                         )
@@ -118,7 +117,11 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                binding.searchBarEdittext.addTextChangedListener(object : TextWatcher {
+//                viewModel.getAllDevelopers.observe(this@MainActivity) {
+//                    developersAdapter.submitList(it.data)
+//                }
+
+                searchBarEdittext.addTextChangedListener(object : TextWatcher {
                     override fun onTextChanged(
                         s: CharSequence?,
                         start: Int,
@@ -157,7 +160,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             //update recyclerview
-            developersAdapter.updateList(temp)
+            developersAdapter.submitList(temp)
         }
     }
 
@@ -168,7 +171,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 it.localizedMessage
             }
-            Snackbar.make(binding.developersListLayout, message, Snackbar.LENGTH_LONG).show()
+            Snackbar.make(developersListLayout, message, Snackbar.LENGTH_LONG).show()
         }
     }
 }

@@ -1,9 +1,11 @@
 package com.solomon.lagosdevelopers
 
-import android.app.Application
+import com.solomon.lagosdevelopers.di.DaggerAppComponent
+import dagger.android.AndroidInjector
+import dagger.android.support.DaggerApplication
 
-class App : Application() {
-    val applicationComponent: ApplicationComponent by lazy {
-        DaggerApplicationComponent.factory().create(applicationContext)
+class App : DaggerApplication() {
+    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
+        return DaggerAppComponent.factory().create(this)
     }
 }

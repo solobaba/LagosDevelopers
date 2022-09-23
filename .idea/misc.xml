@@ -5,8 +5,12 @@
       <map>
         <entry key="app/src/main/res/drawable/cursor.xml" value="0.1325" />
         <entry key="app/src/main/res/drawable/ic_baseline_account_box_24.xml" value="0.152" />
+        <entry key="app/src/main/res/drawable/ic_baseline_star_border_24.xml" value="0.1665" />
+        <entry key="app/src/main/res/drawable/ic_baseline_star_outline_24.xml" value="0.1665" />
+        <entry key="app/src/main/res/drawable/ic_baseline_star_rate_24.xml" value="0.1665" />
         <entry key="app/src/main/res/drawable/ic_search.xml" value="0.1325" />
         <entry key="app/src/main/res/drawable/selector_input_form_bgd.xml" value="0.1325" />
+        <entry key="app/src/main/res/drawable/toggle_image.xml" value="0.124" />
         <entry key="app/src/main/res/font/lato.xml" value="0.24537037037037038" />
         <entry key="app/src/main/res/layout/activity_developer_details.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.23177083333333334" />

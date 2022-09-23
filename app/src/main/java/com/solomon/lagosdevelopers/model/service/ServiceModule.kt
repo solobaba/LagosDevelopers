@@ -1,6 +1,8 @@
 package com.solomon.lagosdevelopers.model.service
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import dagger.Module
+import dagger.Provides
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -9,15 +11,19 @@ import java.net.ConnectException
 import java.net.SocketException
 import java.net.SocketTimeoutException
 import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 
-object Service {
+@Module
+object ServiceModule {
     private const val BASE_URL = "https://api.github.com/"
 
     fun createDisputeApiService(): Api {
         return getRetrofitService().create(Api::class.java)
     }
 
-    private fun getRetrofitService(): Retrofit {
+    @Provides
+    @Singleton
+    fun getRetrofitService(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -37,29 +43,26 @@ object Service {
             .build()
     }
 
-    @JvmStatic
-    fun getUserFriendlyException(t: Throwable): Throwable {
-        t.printStackTrace()
-        return when (t) {
-            is ConnectException ->
-                Throwable("Connection error, Check your internet connection")
-            is SocketTimeoutException ->
-                Throwable("Connection taking too long. Please try again")
-            is NumberFormatException -> {
-                Throwable("Check the amount or digits Inputted")
-            }
-            is NullPointerException -> {
-                if ((t.message ?: "").contains("setCloseOnTouchOutside")) {
-                    Throwable("Please Turn on your location and try again.")
-                } else {
-                    Throwable("An Exception Occurred")
+        @JvmStatic
+        fun getUserFriendlyException(t: Throwable): Throwable {
+            t.printStackTrace()
+            return when (t) {
+                is ConnectException ->
+                    Throwable("Connection error, Check your internet connection")
+                is SocketTimeoutException ->
+                    Throwable("Connection taking too long. Please try again")
+                is NullPointerException -> {
+                    if ((t.message ?: "").contains("setCloseOnTouchOutside")) {
+                        Throwable("Please Turn on your location and try again.")
+                    } else {
+                        Throwable("An Exception Occurred")
+                    }
                 }
+                is SocketException -> {
+                    Throwable("Connection Aborted, Check your internet connection")
+                }
+                else ->
+                    Throwable("Unknown Error")
             }
-            is SocketException -> {
-                Throwable("Connection Aborted, Check your internet connection")
-            }
-            else ->
-                Throwable("Unknown Error")
         }
-    }
 }
