@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +17,7 @@ import com.solomon.lagosdevelopers.model.response.DevelopersItem
 import com.solomon.lagosdevelopers.view.ui.DeveloperDetailsActivity
 
 class DevelopersAdapter(var developersDetails: MutableList<DevelopersItem>) :
-    ListAdapter<DevelopersItem, DevelopersAdapter.MyViewHolder>(DevelopersComparator()) {
+    RecyclerView.Adapter<DevelopersAdapter.MyViewHolder>() {
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateList(list: MutableList<DevelopersItem>) {
@@ -37,10 +38,14 @@ class DevelopersAdapter(var developersDetails: MutableList<DevelopersItem>) :
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val currentItem = getItem(position)
+        val currentItem = differ.currentList[position]
         if (currentItem != null) {
             holder.bind(currentItem)
         }
+    }
+
+    override fun getItemCount(): Int {
+        return differ.currentList.size
     }
 
     class MyViewHolder(private val binding: AdapterDevelopersListItemBinding) :
@@ -83,11 +88,24 @@ class DevelopersAdapter(var developersDetails: MutableList<DevelopersItem>) :
             }
         }
     }
+
+    private val differCallback = object : DiffUtil.ItemCallback<DevelopersItem>() {
+        override fun areItemsTheSame(oldItem: DevelopersItem, newItem: DevelopersItem): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        @SuppressLint("DiffUtilEquals")
+        override fun areContentsTheSame(oldItem: DevelopersItem, newItem: DevelopersItem): Boolean {
+            return oldItem == newItem
+        }
+    }
+
+    private val differ = AsyncListDiffer(this, differCallback)
 }
 
 class DevelopersComparator : DiffUtil.ItemCallback<DevelopersItem>() {
     override fun areItemsTheSame(oldItem: DevelopersItem, newItem: DevelopersItem) =
-        oldItem == newItem
+        oldItem.id == newItem.id
 
     override fun areContentsTheSame(oldItem: DevelopersItem, newItem: DevelopersItem) =
         oldItem == newItem

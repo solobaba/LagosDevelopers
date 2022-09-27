@@ -8,6 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +17,7 @@ import com.solomon.lagosdevelopers.R
 import com.solomon.lagosdevelopers.databinding.ActivityMainBinding
 import com.solomon.lagosdevelopers.model.response.DevelopersItem
 import com.solomon.lagosdevelopers.utils.NetworkUtils
+import com.solomon.lagosdevelopers.utils.Resource
 import com.solomon.lagosdevelopers.view.adapter.DevelopersAdapter
 import com.solomon.lagosdevelopers.viewmodel.DevelopersViewModel
 import dagger.android.AndroidInjection
@@ -33,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var developersAdapter: DevelopersAdapter
+    //private val developersAdapter = DevelopersAdapter()
     private var developersItem: MutableList<DevelopersItem> = ArrayList()
     private var position: Int = 0
 
@@ -57,11 +60,43 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        developersRecyclerList.layoutManager = LinearLayoutManager(this)
         developersAdapter = DevelopersAdapter(developersItem)
-        developersRecyclerList.adapter = developersAdapter
 
-        fetchDevelopersList()
+        binding.apply {
+            developersRecyclerList.apply {
+                adapter = developersAdapter
+                layoutManager = LinearLayoutManager(this@MainActivity)
+            }
+
+            viewModel.movieResponse.observe(this@MainActivity) {
+                when (it)
+                {
+                    is Resource.Loading<*> -> {
+                        progressBar.isVisible = true
+                    }
+                    is Resource.Error<*> -> {
+                        Snackbar.make(developersListLayout, "Data fetching failed", Snackbar.LENGTH_LONG).show()
+                        progressBar.isVisible = false
+                    }
+                    is Resource.Success<*> -> {
+                        developersAdapter.updateList(it.data as MutableList<DevelopersItem>)
+                        progressBar.isVisible = false
+                    }
+                }
+                }
+            }
+
+//            viewModel.getAllDevelopers.observe(this@MainActivity) { result ->
+//                developersAdapter.submitList(result.data)
+//
+//                progressBar.isVisible = result is Resource.Loading && result.data.isNullOrEmpty()
+//            }
+
+//        developersRecyclerList.layoutManager = LinearLayoutManager(this)
+//        developersAdapter = DevelopersAdapter(developersItem)
+//        developersRecyclerList.adapter = developersAdapter
+//
+//        fetchDevelopersList()
 
         viewModel.errorWatcher.observe(this, Observer {
             it?.printStackTrace()
@@ -70,99 +105,101 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun fetchDevelopersList() {
-        if (!NetworkUtils.isConnectionAvailable(this)) {
-            val snackBar: Snackbar = Snackbar.make(
-                developersListLayout,
-                "No Internet Connection. Please, turn on your " +
-                        "\ninternet connection and press the Okay button",
-                Snackbar.LENGTH_INDEFINITE
-            )
-            snackBar.setActionTextColor(ContextCompat.getColor(this, R.color.white))
-            snackBar.setBackgroundTint(ContextCompat.getColor(this, R.color.red))
-            snackBar.setAction("Okay") {
-                fetchDevelopersList()
-                snackBar.dismiss()
-            }
-            snackBar.show()
-        } else {
-            mProgressDialog.show()
+//    private fun fetchDevelopersList() {
+//        if (!NetworkUtils.isConnectionAvailable(this)) {
+//            val snackBar: Snackbar = Snackbar.make(
+//                developersListLayout,
+//                "No Internet Connection. Please, turn on your " +
+//                        "\ninternet connection and press the Okay button",
+//                Snackbar.LENGTH_INDEFINITE
+//            )
+//            snackBar.setActionTextColor(ContextCompat.getColor(this, R.color.white))
+//            snackBar.setBackgroundTint(ContextCompat.getColor(this, R.color.red))
+//            snackBar.setAction("Okay") {
+//                fetchDevelopersList()
+//                snackBar.dismiss()
+//            }
+//            snackBar.show()
+//        } else {
+//            //mProgressDialog.show()
+//
+//            viewModel.getAllDevelopers.observe(this@MainActivity) { result ->
+//                developersAdapter.submitList(result.data)
+//
+//                progressBar.isVisible = result is Resource.Loading && result.data.isNullOrEmpty()
+//            }
+//
+////            viewModel.getAllCardTransactions().observe(this, Observer { result ->
+////                Toast.makeText(this, "hereeee", Toast.LENGTH_LONG).show()
+////                mProgressDialog.dismiss()
+////                when {
+////                    !result?.items.isNullOrEmpty() -> {
+////                        developersItem.clear()
+////                        result?.items?.let {
+////                            developersItem.addAll(it)
+////                            developersAdapter.submitList(developersItem)    //updateList(developersItem)
+////                            Timber.e(result.toString())
+////                        }
+////                    }
+////                    result?.items?.isEmpty() == true -> {
+////                        mProgressDialog.dismiss()
+////                        val response = result
+////                        val snackBar: Snackbar = Snackbar.make(
+////                            developersListLayout,
+////                            "Data not currently available. \n" +
+////                                    "Please, try again.", Snackbar.LENGTH_INDEFINITE
+////                        )
+////                        snackBar.setActionTextColor(ContextCompat.getColor(this, R.color.white))
+////                        snackBar.setBackgroundTint(ContextCompat.getColor(this, R.color.red))
+////                        snackBar.setAction("Okay") {
+////                            snackBar.dismiss()
+////                        }
+////                        snackBar.show()
+////                    }
+////                }
+////
+////                searchBarEdittext.addTextChangedListener(object : TextWatcher {
+////                    override fun onTextChanged(
+////                        s: CharSequence?,
+////                        start: Int,
+////                        before: Int,
+////                        count: Int
+////                    ) {
+////                    }
+////
+////                    override fun beforeTextChanged(
+////                        s: CharSequence?,
+////                        start: Int,
+////                        count: Int,
+////                        after: Int
+////                    ) {
+////                    }
+////
+////                    override fun afterTextChanged(s: Editable) {
+////                        try {
+////                            filter(s.toString(), result?.items ?: emptyList())
+////                        } catch (e: Throwable) {
+////                        }
+////                    }
+////                })
+////            })
+//        }
+//    }
 
-            viewModel.getAllCardTransactions().observe(this, Observer { result ->
-                Toast.makeText(this, "hereeee", Toast.LENGTH_LONG).show()
-                mProgressDialog.dismiss()
-                when {
-                    !result?.items.isNullOrEmpty() -> {
-                        developersItem.clear()
-                        result?.items?.let {
-                            developersItem.addAll(it)
-                            developersAdapter.submitList(developersItem)    //updateList(developersItem)
-                            Timber.e(result.toString())
-                        }
-                    }
-                    result?.items?.isEmpty() == true -> {
-                        mProgressDialog.dismiss()
-                        val response = result
-                        val snackBar: Snackbar = Snackbar.make(
-                            developersListLayout,
-                            "Data not currently available. \n" +
-                                    "Please, try again.", Snackbar.LENGTH_INDEFINITE
-                        )
-                        snackBar.setActionTextColor(ContextCompat.getColor(this, R.color.white))
-                        snackBar.setBackgroundTint(ContextCompat.getColor(this, R.color.red))
-                        snackBar.setAction("Okay") {
-                            snackBar.dismiss()
-                        }
-                        snackBar.show()
-                    }
-                }
-
-//                viewModel.getAllDevelopers.observe(this@MainActivity) {
-//                    developersAdapter.submitList(it.data)
+//    fun filter(text: String?, data: List<DevelopersItem>) {
+//        if (::developersAdapter.isInitialized) {
+//            val temp: MutableList<DevelopersItem> = ArrayList()
+//            for (items in data) {
+//                if (items.id.toString().lowercase(Locale.getDefault()).contains(text.toString()) ||
+//                    items.id.toString().uppercase(Locale.getDefault()).contains(text.toString())
+//                ) {
+//                    temp.add(items)
 //                }
-
-                searchBarEdittext.addTextChangedListener(object : TextWatcher {
-                    override fun onTextChanged(
-                        s: CharSequence?,
-                        start: Int,
-                        before: Int,
-                        count: Int
-                    ) {
-                    }
-
-                    override fun beforeTextChanged(
-                        s: CharSequence?,
-                        start: Int,
-                        count: Int,
-                        after: Int
-                    ) {
-                    }
-
-                    override fun afterTextChanged(s: Editable) {
-                        try {
-                            filter(s.toString(), result?.items ?: emptyList())
-                        } catch (e: Throwable) {
-                        }
-                    }
-                })
-            })
-        }
-    }
-
-    fun filter(text: String?, data: List<DevelopersItem>) {
-        if (::developersAdapter.isInitialized) {
-            val temp: MutableList<DevelopersItem> = ArrayList()
-            for (items in data) {
-                if (items.id.toString().lowercase(Locale.getDefault()).contains(text.toString()) ||
-                    items.id.toString().uppercase(Locale.getDefault()).contains(text.toString())
-                ) {
-                    temp.add(items)
-                }
-            }
-            //update recyclerview
-            developersAdapter.submitList(temp)
-        }
-    }
+//            }
+//            //update recyclerview
+//            developersAdapter.submitList(temp)
+//        }
+//    }
 
     private fun showError(throwable: Throwable?) {
         throwable?.let {

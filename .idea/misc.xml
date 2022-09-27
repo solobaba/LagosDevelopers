@@ -14,7 +14,7 @@
         <entry key="app/src/main/res/font/lato.xml" value="0.24537037037037038" />
         <entry key="app/src/main/res/layout/activity_developer_details.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.23177083333333334" />
-        <entry key="app/src/main/res/layout/adapter_developers_list_item.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/adapter_developers_list_item.xml" value="0.165" />
         <entry key="app/src/main/res/layout/adapter_movies_now_showing_item.xml" value="0.24186046511627907" />
       </map>
     </option>
