@@ -1,10 +1,10 @@
 package com.solomon.lagosdevelopers.utils
 
-//sealed class ResponseFromServer<out T>  {
-//    data class Success<out T>(val data: T) : ResponseFromServer<T>()
-//    data class Error<T>(val failureData: T) : ResponseFromServer<T>()
-//    data class Exception(val exception: Throwable) : ResponseFromServer<Nothing>()
-//}
+sealed class ResponseFromServer<out T>  {
+    data class Success<out T>(val data: T) : ResponseFromServer<T>()
+    data class Error<T>(val failureData: T) : ResponseFromServer<T>()
+    data class Exception(val exception: Throwable) : ResponseFromServer<Nothing>()
+}
 
 sealed class Resource<T>(
     val data: T? = null,

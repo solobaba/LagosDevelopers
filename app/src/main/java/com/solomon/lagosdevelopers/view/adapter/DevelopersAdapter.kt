@@ -94,13 +94,12 @@ class DevelopersAdapter(var developersDetails: MutableList<DevelopersItem>) :
             return oldItem.id == newItem.id
         }
 
-        @SuppressLint("DiffUtilEquals")
         override fun areContentsTheSame(oldItem: DevelopersItem, newItem: DevelopersItem): Boolean {
             return oldItem == newItem
         }
     }
 
-    private val differ = AsyncListDiffer(this, differCallback)
+     val differ = AsyncListDiffer(this, differCallback)
 }
 
 class DevelopersComparator : DiffUtil.ItemCallback<DevelopersItem>() {
