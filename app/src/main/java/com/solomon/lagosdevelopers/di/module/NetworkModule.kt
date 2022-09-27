@@ -17,7 +17,7 @@ class NetworkModule {
     @Singleton
     fun provideDatabase(app: App) : DevelopersDatabase =
         Room.databaseBuilder(app, DevelopersDatabase::class.java, "developer_database")
-            .allowMainThreadQueries()
+            //.allowMainThreadQueries()
             .fallbackToDestructiveMigration()
             .build()
 
