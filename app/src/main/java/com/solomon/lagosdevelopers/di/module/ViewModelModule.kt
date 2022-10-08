@@ -1,24 +1,18 @@
 package com.solomon.lagosdevelopers.di.module
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.solomon.lagosdevelopers.di.ViewModelFactory
-import com.solomon.lagosdevelopers.di.ViewModelKey
 import com.solomon.lagosdevelopers.viewmodel.DevelopersViewModel
-import dagger.Binds
 import dagger.Module
-import dagger.multibindings.IntoMap
-import javax.inject.Singleton
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.scopes.ViewModelScoped
 
+@InstallIn(ViewModelComponent::class)
 @Module
 abstract class ViewModelModule {
 
-    @Binds
-    internal abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
-
-    @Binds
-    @IntoMap
-    @Singleton
-    @ViewModelKey(DevelopersViewModel::class)
+    @Provides
+    @ViewModelScoped
     internal abstract fun bindDevelopersViewModel(viewModel: DevelopersViewModel): ViewModel
 }

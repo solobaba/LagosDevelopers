@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
@@ -16,14 +15,8 @@ import com.solomon.lagosdevelopers.databinding.AdapterDevelopersListItemBinding
 import com.solomon.lagosdevelopers.model.response.DevelopersItem
 import com.solomon.lagosdevelopers.view.ui.DeveloperDetailsActivity
 
-class DevelopersAdapter(var developersDetails: MutableList<DevelopersItem>) :
+class DevelopersAdapter() :
     RecyclerView.Adapter<DevelopersAdapter.MyViewHolder>() {
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun updateList(list: MutableList<DevelopersItem>) {
-        developersDetails = list
-        notifyDataSetChanged()
-    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -100,12 +93,4 @@ class DevelopersAdapter(var developersDetails: MutableList<DevelopersItem>) :
     }
 
      val differ = AsyncListDiffer(this, differCallback)
-}
-
-class DevelopersComparator : DiffUtil.ItemCallback<DevelopersItem>() {
-    override fun areItemsTheSame(oldItem: DevelopersItem, newItem: DevelopersItem) =
-        oldItem.id == newItem.id
-
-    override fun areContentsTheSame(oldItem: DevelopersItem, newItem: DevelopersItem) =
-        oldItem == newItem
 }

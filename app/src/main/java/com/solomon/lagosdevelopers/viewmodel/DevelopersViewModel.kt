@@ -8,14 +8,16 @@ import com.solomon.lagosdevelopers.model.response.LagosDevelopersResponse
 import com.solomon.lagosdevelopers.model.service.ServiceModule
 import com.solomon.lagosdevelopers.utils.Resource
 import com.solomon.lagosdevelopers.utils.ResponseFromServer
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
+@HiltViewModel
 class DevelopersViewModel @Inject constructor(
     private val repository: Repository
-    ) : ViewModel(), ViewModelHelpers {
+    ) : ViewModel, ViewModelHelpers {
 
     private val _loading = MutableStateFlow(false)
     private val _data = MutableStateFlow<Pair<List<DevelopersItem>, String?>>(Pair(emptyList(), null))

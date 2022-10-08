@@ -3,6 +3,9 @@ package com.solomon.lagosdevelopers.model.service
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -14,6 +17,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
+@InstallIn(SingletonComponent::class)
 object ServiceModule {
     private const val BASE_URL = "https://api.github.com/"
 
@@ -21,8 +25,8 @@ object ServiceModule {
         return getRetrofitService().create(Api::class.java)
     }
 
-    @Provides
     @Singleton
+    @Provides
     fun getRetrofitService(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)

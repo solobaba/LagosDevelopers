@@ -21,19 +21,25 @@ import com.solomon.lagosdevelopers.utils.NetworkUtils
 import com.solomon.lagosdevelopers.utils.Resource
 import com.solomon.lagosdevelopers.view.adapter.DevelopersAdapter
 import com.solomon.lagosdevelopers.viewmodel.DevelopersViewModel
-import dagger.android.AndroidInjection
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    val viewModel by lazy {
-        ViewModelProvider(this, viewModelFactory)[DevelopersViewModel::class.java]
-    }
+    @Inject
+    lateinit var viewModel: DevelopersViewModel
+
+    //val viewModel: DevelopersViewModel by viewModels()
+//    @Inject
+//    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+//    val viewModel by lazy {
+//        ViewModelProvider(this, viewModelFactory)[DevelopersViewModel::class.java]
+//    }
 
     private lateinit var developersAdapter: DevelopersAdapter
     private var developersItem: MutableList<DevelopersItem> = ArrayList()
@@ -56,11 +62,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AndroidInjection.inject(this)
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        developersAdapter = DevelopersAdapter(developersItem)
+        developersAdapter = DevelopersAdapter()
 
         binding.apply {
             developersRecyclerList.apply {
