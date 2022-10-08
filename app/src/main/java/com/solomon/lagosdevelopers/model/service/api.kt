@@ -7,5 +7,5 @@ import retrofit2.http.GET
 interface Api {
     @GET("search/users?q=lagos&page=1")
     suspend fun fetchLagosDevelopers(
-    ): LagosDevelopersResponse
+    ): Response<LagosDevelopersResponse>
 }

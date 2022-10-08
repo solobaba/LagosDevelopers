@@ -4,7 +4,10 @@ import androidx.lifecycle.*
 import com.google.gson.Gson
 import com.solomon.lagosdevelopers.model.repository.Repository
 import com.solomon.lagosdevelopers.model.response.DevelopersItem
+import com.solomon.lagosdevelopers.model.response.LagosDevelopersResponse
+import com.solomon.lagosdevelopers.model.service.ServiceModule
 import com.solomon.lagosdevelopers.utils.Resource
+import com.solomon.lagosdevelopers.utils.ResponseFromServer
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -29,34 +32,29 @@ class DevelopersViewModel @Inject constructor(
     private var _movieResponse = MutableLiveData<List<DevelopersItem>>()
     val movieResponse: LiveData<List<DevelopersItem>> = _movieResponse
 
-
     val getAllDevelopers = repository.getDevelopers().asLiveData()
 
-//    fun getAllCardTransactions(): LiveData<LagosDevelopersResponse?> {
-//        val getAllCardTransactions = MutableLiveData<LagosDevelopersResponse?>()
-//        viewModelScope.launch {
-//            try {
-//                when (val response = repository.getLagosDevelopers(
-//                )) {
-//                    is ResponseFromServer.Success -> {
-//                        getAllCardTransactions.value = response.data
-//                    }
-//                    is ResponseFromServer.Error -> {
-//                        setError(throwable = Throwable(response.failureData.toString()))
-//                    }
-//                    is ResponseFromServer.Exception -> {
-//                        setError(throwable = Throwable(response.exception.message))
-//                    }
-//                }
-//            } catch (t: Throwable) {
-//                setError(throwable = ServiceModule.getUserFriendlyException(t))
-//            }
-//        }
-//        return getAllCardTransactions
-//    }
-
-    init {
-        getAllDevelopers()
+    fun getAllCardTransactions(): LiveData<LagosDevelopersResponse?> {
+        val getAllCardTransactions = MutableLiveData<LagosDevelopersResponse?>()
+        viewModelScope.launch {
+            try {
+                when (val response = repository.getLagosDevelopers(
+                )) {
+                    is ResponseFromServer.Success -> {
+                        getAllCardTransactions.value = response.data
+                    }
+                    is ResponseFromServer.Error -> {
+                        setError(throwable = Throwable(response.failureData.toString()))
+                    }
+                    is ResponseFromServer.Exception -> {
+                        setError(throwable = Throwable(response.exception.message))
+                    }
+                }
+            } catch (t: Throwable) {
+                setError(throwable = ServiceModule.getUserFriendlyException(t))
+            }
+        }
+        return getAllCardTransactions
     }
 
     private fun getAllDevelopers() {

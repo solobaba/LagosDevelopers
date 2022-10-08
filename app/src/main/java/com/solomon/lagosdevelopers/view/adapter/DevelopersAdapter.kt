@@ -17,7 +17,7 @@ import com.solomon.lagosdevelopers.model.response.DevelopersItem
 import com.solomon.lagosdevelopers.view.ui.DeveloperDetailsActivity
 
 class DevelopersAdapter(var developersDetails: MutableList<DevelopersItem>) :
-    RecyclerView.Adapter<DevelopersAdapter.MyViewHolder>() {
+    ListAdapter<DevelopersItem, DevelopersAdapter.MyViewHolder>(DevelopersComparator()) {
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateList(list: MutableList<DevelopersItem>) {
@@ -38,14 +38,10 @@ class DevelopersAdapter(var developersDetails: MutableList<DevelopersItem>) :
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val currentItem = differ.currentList[position]
+        val currentItem = getItem(position)
         if (currentItem != null) {
             holder.bind(currentItem)
         }
-    }
-
-    override fun getItemCount(): Int {
-        return differ.currentList.size
     }
 
     class MyViewHolder(private val binding: AdapterDevelopersListItemBinding) :
@@ -88,24 +84,11 @@ class DevelopersAdapter(var developersDetails: MutableList<DevelopersItem>) :
             }
         }
     }
-
-    private val differCallback = object : DiffUtil.ItemCallback<DevelopersItem>() {
-        override fun areItemsTheSame(oldItem: DevelopersItem, newItem: DevelopersItem): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        @SuppressLint("DiffUtilEquals")
-        override fun areContentsTheSame(oldItem: DevelopersItem, newItem: DevelopersItem): Boolean {
-            return oldItem == newItem
-        }
-    }
-
-    private val differ = AsyncListDiffer(this, differCallback)
 }
 
 class DevelopersComparator : DiffUtil.ItemCallback<DevelopersItem>() {
     override fun areItemsTheSame(oldItem: DevelopersItem, newItem: DevelopersItem) =
-        oldItem.id == newItem.id
+        oldItem == newItem
 
     override fun areContentsTheSame(oldItem: DevelopersItem, newItem: DevelopersItem) =
         oldItem == newItem
