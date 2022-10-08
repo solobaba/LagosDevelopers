@@ -16,14 +16,8 @@ import com.solomon.lagosdevelopers.databinding.AdapterDevelopersListItemBinding
 import com.solomon.lagosdevelopers.model.response.DevelopersItem
 import com.solomon.lagosdevelopers.view.ui.DeveloperDetailsActivity
 
-class DevelopersAdapter(var developersDetails: MutableList<DevelopersItem>) :
+class DevelopersAdapter() :
     ListAdapter<DevelopersItem, DevelopersAdapter.MyViewHolder>(DevelopersComparator()) {
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun updateList(list: MutableList<DevelopersItem>) {
-        developersDetails = list
-        notifyDataSetChanged()
-    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,

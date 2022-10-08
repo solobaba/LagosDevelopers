@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">LagosDevelopers</string>
+    <string name="app_name">CarbonMovieApp</string>
     <string name="search">Search with ID</string>
     <string name="type">Type:</string>
     <string name="id">ID:</string>

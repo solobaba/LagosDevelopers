@@ -35,7 +35,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var developersAdapter: DevelopersAdapter
-    //private val developersAdapter = DevelopersAdapter()
     private var developersItem: MutableList<DevelopersItem> = ArrayList()
     private var position: Int = 0
 
@@ -61,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         developersRecyclerList.layoutManager = LinearLayoutManager(this)
-        developersAdapter = DevelopersAdapter(developersItem)
+        developersAdapter = DevelopersAdapter()
         developersRecyclerList.adapter = developersAdapter
 
         fetchDevelopersList()
