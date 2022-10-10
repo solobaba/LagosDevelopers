@@ -1,4 +1,4 @@
-package com.solomon.lagosdevelopers.view.adapter
+package com.solomon.carbonapp.view.adapter
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.solomon.data.db.NewsEntity
-import com.solomon.lagosdevelopers.R
-import com.solomon.lagosdevelopers.databinding.AdapterDevelopersListItemBinding
-import com.solomon.lagosdevelopers.view.ui.NewsDetailActivity
+import com.solomon.carbonapp.R
+import com.solomon.carbonapp.databinding.AdapterDevelopersListItemBinding
+import com.solomon.carbonapp.view.ui.NewsDetailActivity
 
 class DevelopersAdapter :
     ListAdapter<NewsEntity, DevelopersAdapter.MyViewHolder>(DevelopersComparator()) {

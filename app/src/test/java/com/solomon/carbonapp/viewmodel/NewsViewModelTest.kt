@@ -1,4 +1,4 @@
-package com.solomon.lagosdevelopers.viewmodel
+package com.solomon.carbonapp.viewmodel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth

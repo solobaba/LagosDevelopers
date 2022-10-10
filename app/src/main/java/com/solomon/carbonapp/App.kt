@@ -1,6 +1,6 @@
-package com.solomon.lagosdevelopers
+package com.solomon.carbonapp
 
-import com.solomon.lagosdevelopers.di.DaggerAppComponent
+import com.solomon.carbonapp.di.DaggerAppComponent
 import dagger.android.AndroidInjector
 import dagger.android.support.DaggerApplication
 

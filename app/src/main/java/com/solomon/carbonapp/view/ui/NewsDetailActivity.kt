@@ -1,4 +1,4 @@
-package com.solomon.lagosdevelopers.view.ui
+package com.solomon.carbonapp.view.ui
 
 import android.content.Intent
 import android.net.Uri
@@ -8,7 +8,7 @@ import android.view.MenuItem
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.solomon.data.db.NewsEntity
-import com.solomon.lagosdevelopers.databinding.ActivityDeveloperDetailsBinding
+import com.solomon.carbonapp.databinding.ActivityDeveloperDetailsBinding
 import kotlinx.android.synthetic.main.activity_developer_details.*
 import timber.log.Timber
 

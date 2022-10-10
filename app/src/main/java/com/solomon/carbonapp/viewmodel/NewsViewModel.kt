@@ -1,11 +1,8 @@
-package com.solomon.lagosdevelopers.viewmodel
+package com.solomon.carbonapp.viewmodel
 
 import androidx.lifecycle.*
 import com.solomon.data.db.NewsEntity
 import com.solomon.data.model.repository.Repository
-import com.solomon.data.model.response.NewsResponse
-import com.solomon.data.model.service.ServiceModule
-import com.solomon.data.utils.ResponseFromServer
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -26,31 +23,6 @@ class NewsViewModel @Inject constructor(
     val error = MutableLiveData<Throwable?>()
     val errorWatcher: LiveData<Throwable?>
         get() = error
-
-    //val getAllDevelopers = repository.getDevelopers().asLiveData()
-
-    fun getAllNews(): LiveData<NewsResponse?> {
-        val getAllNewsResponse = MutableLiveData<NewsResponse?>()
-        viewModelScope.launch {
-            try {
-                when (val response = repository.getNews(
-                )) {
-                    is ResponseFromServer.Success -> {
-                        getAllNewsResponse.value = response.data
-                    }
-                    is ResponseFromServer.Error -> {
-                        setError(throwable = Throwable(response.failureData.toString()))
-                    }
-                    is ResponseFromServer.Exception -> {
-                        setError(throwable = Throwable(response.exception.message))
-                    }
-                }
-            } catch (t: Throwable) {
-                setError(throwable = ServiceModule.getUserFriendlyException(t))
-            }
-        }
-        return getAllNewsResponse
-    }
 
     fun getAllNewsInfo() {
         viewModelScope.launch {

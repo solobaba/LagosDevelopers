@@ -1,4 +1,4 @@
-package com.solomon.lagosdevelopers.model.repository
+package com.solomon.carbonapp.model.repository
 
 import com.google.common.truth.Truth
 import com.solomon.data.db.NewsEntity

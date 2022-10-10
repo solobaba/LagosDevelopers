@@ -1,6 +1,6 @@
-package com.solomon.lagosdevelopers.di.module
+package com.solomon.carbonapp.di.module
 
-import com.solomon.lagosdevelopers.view.ui.MainActivity
+import com.solomon.carbonapp.view.ui.MainActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

@@ -1,4 +1,4 @@
-package com.solomon.lagosdevelopers.service
+package com.solomon.carbonapp.service
 
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.Gson
@@ -47,7 +47,7 @@ class ApiServiceTest {
             mockWebServer.enqueue(
                 mockResponse.setBody("{ }")
             )
-            val response = apiService.getTopHeadlines(COUNTRY_CODE, API_KEY)
+            val response = apiService.getTopHeadlinesTwo(COUNTRY_CODE, API_KEY)
             val request = mockWebServer.takeRequest()
 
             assertThat(request.path).isEqualTo("top-headlines")

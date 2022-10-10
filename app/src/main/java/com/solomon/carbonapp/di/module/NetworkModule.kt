@@ -1,7 +1,7 @@
-package com.solomon.lagosdevelopers.di.module
+package com.solomon.carbonapp.di.module
 
 import androidx.room.Room
-import com.solomon.lagosdevelopers.App
+import com.solomon.carbonapp.App
 import com.solomon.data.db.NewsDatabase
 import com.solomon.data.model.repository.Repository
 import com.solomon.data.model.service.Api

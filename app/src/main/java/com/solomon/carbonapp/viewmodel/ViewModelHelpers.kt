@@ -1,4 +1,4 @@
-package com.solomon.lagosdevelopers.viewmodel
+package com.solomon.carbonapp.viewmodel
 
 interface ViewModelHelpers {
     fun setError(throwable: Throwable)

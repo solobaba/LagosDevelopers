@@ -1,4 +1,4 @@
-package com.solomon.lagosdevelopers.di
+package com.solomon.carbonapp.di
 
 import androidx.lifecycle.ViewModel
 import dagger.MapKey

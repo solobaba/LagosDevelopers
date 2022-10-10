@@ -11,10 +11,4 @@ interface Api {
         @Query("country") countryCode: String,
         @Query("apiKey") apiKey: String
     ): NewsResponse
-
-    @GET("top-headlines")
-    suspend fun getTopHeadlines(
-        @Query("country") countryCode: String,
-        @Query("apiKey") apiKey: String
-    ): Response<NewsResponse>
 }

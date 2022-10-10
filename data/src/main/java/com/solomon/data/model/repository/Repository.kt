@@ -4,18 +4,14 @@ import com.google.gson.Gson
 import com.solomon.data.db.NewsDatabase
 import com.solomon.data.db.NewsEntity
 import com.solomon.data.model.response.NewsData
-import com.solomon.data.model.response.NewsResponse
 import com.solomon.data.model.service.Api
-import com.solomon.data.model.service.ServiceModule
 import com.solomon.data.model.service.ServiceModule.API_KEY
 import com.solomon.data.model.service.ServiceModule.COUNTRY_CODE
-import com.solomon.data.utils.ResponseFromServer
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -26,22 +22,6 @@ class Repository @Inject constructor(
 
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
     private val newsDao = db.newsDao()
-
-//    fun getDevelopers() = networkBoundResource(
-//        query = {
-//            developersDao.getDevelopers()
-//        },
-//        fetch = {
-//            delay(2000)
-//            api
-//        },
-//        saveFetchResult = { developers ->
-//            db.withTransaction {
-//                developersDao.deleteAllDevelopers()
-//                developersDao.insertDevelopers(emptyList())
-//            }
-//        }
-//    )
 
     fun getNewsInfo() = flow {
         val result = api.getTopHeadlinesTwo(COUNTRY_CODE, API_KEY)
@@ -62,23 +42,6 @@ class Repository @Inject constructor(
         emit(news)
     }.catch { e ->
         e.printStackTrace()
-    }
-
-    suspend fun getNews(): ResponseFromServer<NewsResponse?> {
-        return withContext(coroutineDispatcher) {
-            try {
-                val response = ServiceModule.createDisputeApiService()
-                    .getTopHeadlines(COUNTRY_CODE, API_KEY)
-                val result = response.body()
-                if (response.isSuccessful && result != null) {
-                    ResponseFromServer.Success(data = result)
-                } else {
-                    ResponseFromServer.Error(failureData = null)
-                }
-            } catch (t: Throwable) {
-                ResponseFromServer.Exception(exception = ServiceModule.getUserFriendlyException(t))
-            }
-        }
     }
 
     private fun List<NewsData>.toNewsList() : List<NewsEntity> {

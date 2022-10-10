@@ -1,4 +1,4 @@
-package com.solomon.lagosdevelopers
+package com.solomon.carbonapp
 
 import org.junit.Test
 
