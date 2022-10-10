@@ -1,4 +1,4 @@
-package com.solomon.lagosdevelopers.db
+package com.solomon.data.db
 
 import androidx.room.Dao
 import androidx.room.Insert

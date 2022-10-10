@@ -1,8 +1,9 @@
 package com.solomon.lagosdevelopers.model.repository
 
 import com.google.common.truth.Truth
-import com.solomon.lagosdevelopers.model.response.NewsResponse
-import com.solomon.lagosdevelopers.utils.ResponseFromServer
+import com.solomon.data.db.NewsEntity
+import com.solomon.data.model.repository.Repository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
@@ -22,25 +23,25 @@ class RepositoryTest {
     @Test
     fun validateLogin_isSuccess() {
         runBlocking {
-            Mockito.`when`(repository.getNews()).thenReturn(
-                NewsResponse() as ResponseFromServer<NewsResponse?>
+            Mockito.`when`(repository.getNewsInfo()).thenReturn(
+                NewsEntity() as Flow<List<NewsEntity>>
             )
         }
 
         runBlocking {
-            Truth.assertThat(repository.getNews())
-                .isEqualTo(NewsResponse())
+            Truth.assertThat(repository.getNewsInfo())
+                .isEqualTo(NewsEntity())
         }
     }
 
     @Test
     fun validateLogin_isFailed() {
         runBlocking {
-            Mockito.`when`(repository.getNews()).thenReturn(null)
+            Mockito.`when`(repository.getNewsInfo()).thenReturn(null)
         }
 
         runBlocking {
-            Truth.assertThat(repository.getNews())
+            Truth.assertThat(repository.getNewsInfo())
                 .isEqualTo(null)
         }
     }

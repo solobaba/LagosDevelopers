@@ -2,9 +2,9 @@ package com.solomon.lagosdevelopers.di.module
 
 import androidx.room.Room
 import com.solomon.lagosdevelopers.App
-import com.solomon.lagosdevelopers.db.NewsDatabase
-import com.solomon.lagosdevelopers.model.repository.Repository
-import com.solomon.lagosdevelopers.model.service.Api
+import com.solomon.data.db.NewsDatabase
+import com.solomon.data.model.repository.Repository
+import com.solomon.data.model.service.Api
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.Dispatchers

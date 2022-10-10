@@ -1,4 +1,4 @@
-package com.solomon.lagosdevelopers.db
+package com.solomon.data.db
 
 import android.os.Parcelable
 import androidx.room.Entity
@@ -14,5 +14,6 @@ data class NewsEntity (
     val imageUrl: String = "N/A",
     val content: String = "N/A",
     val fullArticleUrl: String = "N/A",
-    val date: String = "N/A"
+    val date: String = "N/A",
+    val name: String = "N/A"
 ): Parcelable

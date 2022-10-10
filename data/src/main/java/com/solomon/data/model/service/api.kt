@@ -1,6 +1,6 @@
-package com.solomon.lagosdevelopers.model.service
+package com.solomon.data.model.service
 
-import com.solomon.lagosdevelopers.model.response.NewsResponse
+import com.solomon.data.model.response.NewsResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

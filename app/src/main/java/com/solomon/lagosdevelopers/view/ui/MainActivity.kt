@@ -6,20 +6,20 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.widget.Toast
-import androidx.core.content.ContextCompat
+import androidx.lifecycle.*
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
-import com.solomon.lagosdevelopers.R
+import com.google.gson.Gson
+import com.solomon.data.db.NewsEntity
 import com.solomon.lagosdevelopers.databinding.ActivityMainBinding
-import com.solomon.lagosdevelopers.model.response.NewsData
-import com.solomon.lagosdevelopers.utils.NetworkUtils
+import com.solomon.data.model.response.NewsData
 import com.solomon.lagosdevelopers.view.adapter.DevelopersAdapter
 import com.solomon.lagosdevelopers.viewmodel.NewsViewModel
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
@@ -60,8 +60,8 @@ class MainActivity : AppCompatActivity() {
         developersAdapter = DevelopersAdapter()
         developersRecyclerList.adapter = developersAdapter
 
-        fetchNewsList()
-        //fetchNewsInfo()
+        //fetchNewsList()
+        fetchNewsInfo()
 
         viewModel.errorWatcher.observe(this, Observer {
             it?.printStackTrace()
@@ -70,106 +70,122 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun fetchNewsInfo(
-        //article: (Article) -> Unit
-    ) {
+    private fun fetchNewsInfo() {
         mProgressDialog.show()
         viewModel.getAllNewsInfo()
-        Toast.makeText(this, "roommm", Toast.LENGTH_SHORT).show()
-        mProgressDialog.dismiss()
 
-//        when {
-//            viewModel.data.value.first.isNotEmpty() -> {
-//                developersItem.clear()
-//                result?.newsData?.let {
-//                    developersItem.addAll(it)
-//                    developersAdapter.submitList(developersItem)
-//                    Timber.e(result.toString())
-//                }
-//                article(it)
-//            }
-//            !data.second.isNullOrEmpty() -> ErrorView(data.second!!) {
-//                //postIntent(Retry)
-//            }
-//        }
-    }
-
-    private fun fetchNewsList() {
-        if (!NetworkUtils.isConnectionAvailable(this)) {
-            val snackBar: Snackbar = Snackbar.make(
-                developersListLayout,
-                "No Internet Connection. Please, turn on your " +
-                        "\ninternet connection and press the Okay button",
-                Snackbar.LENGTH_INDEFINITE
-            )
-            snackBar.setActionTextColor(ContextCompat.getColor(this, R.color.white))
-            snackBar.setBackgroundTint(ContextCompat.getColor(this, R.color.red))
-            snackBar.setAction("Okay") {
-                fetchNewsList()
-                snackBar.dismiss()
-            }
-            snackBar.show()
-        } else {
-            mProgressDialog.show()
-            viewModel.getAllNews().observe(this, Observer { result ->
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 mProgressDialog.dismiss()
-                when {
-                    !result?.articles.isNullOrEmpty() -> {
-                        developersItem.clear()
-                        result?.articles?.let {
-                            developersItem.addAll(it)
-                            developersAdapter.submitList(developersItem)
-                            Timber.e(result.toString())
+                viewModel.data.collectLatest {
+                    developersAdapter.submitList(it.first)
+                    Timber.e(Gson().toJson(it))
+
+                    searchBarEdittext.addTextChangedListener(object : TextWatcher {
+                        override fun onTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
+                        ) {
                         }
-                    }
-                    result?.articles?.isEmpty() == true -> {
-                        mProgressDialog.dismiss()
-                        val response = result
-                        val snackBar: Snackbar = Snackbar.make(
-                            developersListLayout,
-                            "Data not currently available. \n" +
-                                    "Please, try again.", Snackbar.LENGTH_INDEFINITE
-                        )
-                        snackBar.setActionTextColor(ContextCompat.getColor(this, R.color.white))
-                        snackBar.setBackgroundTint(ContextCompat.getColor(this, R.color.red))
-                        snackBar.setAction("Okay") {
-                            snackBar.dismiss()
+
+                        override fun beforeTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
+                        ) {
                         }
-                        snackBar.show()
-                    }
+
+                        override fun afterTextChanged(s: Editable) {
+                            try {
+                                filter(s.toString(), (((it.first ?: emptyList()))))
+                            } catch (e: Throwable) {
+                            }
+                        }
+                    })
                 }
-
-                searchBarEdittext.addTextChangedListener(object : TextWatcher {
-                    override fun onTextChanged(
-                        s: CharSequence?,
-                        start: Int,
-                        before: Int,
-                        count: Int
-                    ) {
-                    }
-
-                    override fun beforeTextChanged(
-                        s: CharSequence?,
-                        start: Int,
-                        count: Int,
-                        after: Int
-                    ) {
-                    }
-
-                    override fun afterTextChanged(s: Editable) {
-                        try {
-                            filter(s.toString(), (((result?.articles ?: emptyList()))))
-                        } catch (e: Throwable) {
-                        }
-                    }
-                })
-            })
+            }
         }
     }
 
-    fun filter(text: String?, data: List<NewsData>) {
+//    private fun fetchNewsList() {
+//        if (!NetworkUtils.isConnectionAvailable(this)) {
+//            val snackBar: Snackbar = Snackbar.make(
+//                developersListLayout,
+//                "No Internet Connection. Please, turn on your " +
+//                        "\ninternet connection and press the Okay button",
+//                Snackbar.LENGTH_INDEFINITE
+//            )
+//            snackBar.setActionTextColor(ContextCompat.getColor(this, R.color.white))
+//            snackBar.setBackgroundTint(ContextCompat.getColor(this, R.color.red))
+//            snackBar.setAction("Okay") {
+//                fetchNewsList()
+//                snackBar.dismiss()
+//            }
+//            snackBar.show()
+//        } else {
+//            mProgressDialog.show()
+//            viewModel.getAllNews().observe(this, Observer { result ->
+//                mProgressDialog.dismiss()
+//                when {
+//                    !result?.articles.isNullOrEmpty() -> {
+//                        developersItem.clear()
+//                        result?.articles?.let {
+//                            developersItem.addAll(it)
+//                            developersAdapter.submitList(developersItem)
+//                            Timber.e(result.toString())
+//                        }
+//                    }
+//                    result?.articles?.isEmpty() == true -> {
+//                        mProgressDialog.dismiss()
+//                        val response = result
+//                        val snackBar: Snackbar = Snackbar.make(
+//                            developersListLayout,
+//                            "Data not currently available. \n" +
+//                                    "Please, try again.", Snackbar.LENGTH_INDEFINITE
+//                        )
+//                        snackBar.setActionTextColor(ContextCompat.getColor(this, R.color.white))
+//                        snackBar.setBackgroundTint(ContextCompat.getColor(this, R.color.red))
+//                        snackBar.setAction("Okay") {
+//                            snackBar.dismiss()
+//                        }
+//                        snackBar.show()
+//                    }
+//                }
+//
+//                searchBarEdittext.addTextChangedListener(object : TextWatcher {
+//                    override fun onTextChanged(
+//                        s: CharSequence?,
+//                        start: Int,
+//                        before: Int,
+//                        count: Int
+//                    ) {
+//                    }
+//
+//                    override fun beforeTextChanged(
+//                        s: CharSequence?,
+//                        start: Int,
+//                        count: Int,
+//                        after: Int
+//                    ) {
+//                    }
+//
+//                    override fun afterTextChanged(s: Editable) {
+//                        try {
+//                            filter(s.toString(), (((result?.articles ?: emptyList()))))
+//                        } catch (e: Throwable) {
+//                        }
+//                    }
+//                })
+//            })
+//        }
+//    }
+
+    fun filter(text: String?, data: List<NewsEntity>) {
         if (::developersAdapter.isInitialized) {
-            val temp: MutableList<NewsData> = ArrayList()
+            val temp: MutableList<NewsEntity> = ArrayList()
             for (items in data) {
                 if (items.author.toString().lowercase(Locale.getDefault()).contains(text.toString()) ||
                     items.author.toString().uppercase(Locale.getDefault()).contains(text.toString())

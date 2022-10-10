@@ -1,4 +1,4 @@
-package com.solomon.lagosdevelopers.utils
+package com.solomon.data.utils
 
 import kotlinx.coroutines.flow.*
 

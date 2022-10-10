@@ -1,4 +1,4 @@
-package com.solomon.lagosdevelopers.utils
+package com.solomon.data.utils
 
 sealed class ResponseFromServer<out T>  {
     data class Success<out T>(val data: T) : ResponseFromServer<T>()

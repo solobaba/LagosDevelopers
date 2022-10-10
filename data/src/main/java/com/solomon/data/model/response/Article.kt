@@ -1,7 +1,7 @@
-package com.solomon.lagosdevelopers.model.response
+package com.solomon.data.model.response
 
 import android.os.Parcelable
-import com.solomon.lagosdevelopers.db.NewsEntity
+import com.solomon.data.db.NewsEntity
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize

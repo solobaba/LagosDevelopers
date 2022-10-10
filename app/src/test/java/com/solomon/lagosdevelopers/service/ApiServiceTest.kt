@@ -3,9 +3,9 @@ package com.solomon.lagosdevelopers.service
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.solomon.lagosdevelopers.model.service.Api
-import com.solomon.lagosdevelopers.model.service.ServiceModule.API_KEY
-import com.solomon.lagosdevelopers.model.service.ServiceModule.COUNTRY_CODE
+import com.solomon.data.model.service.Api
+import com.solomon.data.model.service.ServiceModule.API_KEY
+import com.solomon.data.model.service.ServiceModule.COUNTRY_CODE
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer

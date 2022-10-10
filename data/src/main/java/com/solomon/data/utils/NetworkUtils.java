@@ -1,4 +1,4 @@
-package com.solomon.lagosdevelopers.utils;
+package com.solomon.data.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

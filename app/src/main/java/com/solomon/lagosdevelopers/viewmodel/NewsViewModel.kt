@@ -1,13 +1,11 @@
 package com.solomon.lagosdevelopers.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.*
-import com.google.gson.Gson
-import com.solomon.lagosdevelopers.db.NewsEntity
-import com.solomon.lagosdevelopers.model.repository.Repository
-import com.solomon.lagosdevelopers.model.response.*
-import com.solomon.lagosdevelopers.model.service.ServiceModule
-import com.solomon.lagosdevelopers.utils.ResponseFromServer
+import com.solomon.data.db.NewsEntity
+import com.solomon.data.model.repository.Repository
+import com.solomon.data.model.response.NewsResponse
+import com.solomon.data.model.service.ServiceModule
+import com.solomon.data.utils.ResponseFromServer
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -19,7 +17,6 @@ class NewsViewModel @Inject constructor(
 
     private val _isLoading by lazy { MutableLiveData<Boolean>() }
     val isLoading: LiveData<Boolean> by lazy { _isLoading }
-    val getAllNewsResponse = MutableLiveData<NewsResponse?>()
 
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateFlow()
@@ -29,10 +26,6 @@ class NewsViewModel @Inject constructor(
     val error = MutableLiveData<Throwable?>()
     val errorWatcher: LiveData<Throwable?>
         get() = error
-
-    private val progressDialog = MutableLiveData<Pair<Boolean, String>>()
-    val progressDialogLive: LiveData<Pair<Boolean, String>>
-        get() = progressDialog
 
     //val getAllDevelopers = repository.getDevelopers().asLiveData()
 
@@ -61,10 +54,6 @@ class NewsViewModel @Inject constructor(
 
     fun getAllNewsInfo() {
         viewModelScope.launch {
-//            repository.getNewsInfo().collect {
-//                _movieResponse.postValue(it)
-//                Timber.tag("DevelopersList").e(Gson().toJson(it))
-//            }
             repository.getNewsInfo()
                 .onStart {
                     _loading.value = true
@@ -85,10 +74,6 @@ class NewsViewModel @Inject constructor(
     override fun setError(throwable: Throwable) {
         throwable.printStackTrace()
         error.value = throwable
-    }
-
-    override fun showProgress(show: Boolean, message: String) {
-        progressDialog.value = Pair(show, message)
     }
 
     fun setLoadingState(state: Boolean) {

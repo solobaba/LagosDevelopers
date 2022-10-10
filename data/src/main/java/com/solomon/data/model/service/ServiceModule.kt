@@ -1,4 +1,4 @@
-package com.solomon.lagosdevelopers.model.service
+package com.solomon.data.model.service
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import dagger.Module

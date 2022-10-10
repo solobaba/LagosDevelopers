@@ -1,4 +1,4 @@
-package com.solomon.lagosdevelopers.model.response
+package com.solomon.data.model.response
 
 import java.io.Serializable
 

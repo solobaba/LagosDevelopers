@@ -2,9 +2,7 @@ package com.solomon.lagosdevelopers.viewmodel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth
-import com.solomon.lagosdevelopers.model.repository.Repository
-import com.solomon.lagosdevelopers.model.response.NewsResponse
-import com.solomon.lagosdevelopers.utils.ResponseFromServer
+import com.solomon.data.model.repository.Repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
@@ -49,18 +47,18 @@ class NewsViewModelTest {
     }
 
     @Test
-    suspend fun onResponseReceived_checkFailedState_isError() {
-        Mockito.`when`(repository.getNews()).thenReturn(null)
+    fun onResponseReceived_checkFailedState_isError() {
+        Mockito.`when`(repository.getNewsInfo()).thenReturn(null)
         newsViewModel.getAllNews()
         Truth.assertThat(newsViewModel.error.value).isNotNull()
         Truth.assertThat(newsViewModel.isLoading.value).isEqualTo(false)
     }
 
     @Test
-    suspend fun onResponseReceived_checkSuccessState_isSuccess() {
-        //Mockito.`when`(repository.getNews()).thenReturn(null)
+    fun onResponseReceived_checkSuccessState_isSuccess() {
+        //Mockito.`when`(repository.getNewsInfo()).thenReturn(NewsEntity)
         newsViewModel.getAllNews()
-        Truth.assertThat(newsViewModel.getAllNewsResponse.value != null)
+        Truth.assertThat(newsViewModel.data.value.first != null)
         Truth.assertThat(newsViewModel.error.value).isEqualTo(true)
         Truth.assertThat(newsViewModel.isLoading.value).isEqualTo(false)
     }

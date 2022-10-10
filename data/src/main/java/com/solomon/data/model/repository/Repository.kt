@@ -1,14 +1,15 @@
-package com.solomon.lagosdevelopers.model.repository
+package com.solomon.data.model.repository
 
 import com.google.gson.Gson
-import com.solomon.lagosdevelopers.db.NewsDatabase
-import com.solomon.lagosdevelopers.db.NewsEntity
-import com.solomon.lagosdevelopers.model.response.*
-import com.solomon.lagosdevelopers.model.service.Api
-import com.solomon.lagosdevelopers.model.service.ServiceModule
-import com.solomon.lagosdevelopers.model.service.ServiceModule.API_KEY
-import com.solomon.lagosdevelopers.model.service.ServiceModule.COUNTRY_CODE
-import com.solomon.lagosdevelopers.utils.ResponseFromServer
+import com.solomon.data.db.NewsDatabase
+import com.solomon.data.db.NewsEntity
+import com.solomon.data.model.response.NewsData
+import com.solomon.data.model.response.NewsResponse
+import com.solomon.data.model.service.Api
+import com.solomon.data.model.service.ServiceModule
+import com.solomon.data.model.service.ServiceModule.API_KEY
+import com.solomon.data.model.service.ServiceModule.COUNTRY_CODE
+import com.solomon.data.utils.ResponseFromServer
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -91,7 +92,8 @@ class Repository @Inject constructor(
                     imageUrl = it.urlToImage.orEmpty(),
                     content = it.content.orEmpty(),
                     fullArticleUrl = it.url.orEmpty(),
-                    date = it.publishedAt.orEmpty()
+                    date = it.publishedAt.orEmpty(),
+                    name = it.source.name.orEmpty()
                 )
             )
             Timber.tag("muta").e(mutable.toString())

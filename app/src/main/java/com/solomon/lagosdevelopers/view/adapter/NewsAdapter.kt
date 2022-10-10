@@ -10,13 +10,13 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
+import com.solomon.data.db.NewsEntity
 import com.solomon.lagosdevelopers.R
 import com.solomon.lagosdevelopers.databinding.AdapterDevelopersListItemBinding
-import com.solomon.lagosdevelopers.model.response.*
 import com.solomon.lagosdevelopers.view.ui.NewsDetailActivity
 
 class DevelopersAdapter :
-    ListAdapter<NewsData, DevelopersAdapter.MyViewHolder>(DevelopersComparator()) {
+    ListAdapter<NewsEntity, DevelopersAdapter.MyViewHolder>(DevelopersComparator()) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -42,15 +42,15 @@ class DevelopersAdapter :
         var starred = false
 
         @SuppressLint("UseCompatLoadingForDrawables")
-        fun bind(resultDetails: NewsData) {
+        fun bind(resultDetails: NewsEntity) {
             binding.apply {
                 Glide.with(itemView)
-                    .load(resultDetails.urlToImage)
+                    .load(resultDetails.imageUrl)
                     .into(developerImg)
 
                 author.text = resultDetails.author.toString()
                 title.text = resultDetails.title
-                name.text = resultDetails.source.name
+                name.text = resultDetails.name
                 containerList.setOnClickListener {
                     val intent = Intent(itemView.context, NewsDetailActivity::class.java)
                     intent.putExtra(NewsDetailActivity.DEVELOPER_DETAILS, resultDetails)
@@ -79,10 +79,10 @@ class DevelopersAdapter :
     }
 }
 
-class DevelopersComparator : DiffUtil.ItemCallback<NewsData>() {
-    override fun areItemsTheSame(oldItem: NewsData, newItem: NewsData) =
+class DevelopersComparator : DiffUtil.ItemCallback<NewsEntity>() {
+    override fun areItemsTheSame(oldItem: NewsEntity, newItem: NewsEntity) =
         oldItem == newItem
 
-    override fun areContentsTheSame(oldItem: NewsData, newItem: NewsData) =
+    override fun areContentsTheSame(oldItem: NewsEntity, newItem: NewsEntity) =
         oldItem == newItem
 }
