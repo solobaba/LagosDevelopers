@@ -1,11 +1,11 @@
 <resources>
-    <string name="app_name">CarbonMovieApp</string>
-    <string name="search">Search with ID</string>
+    <string name="app_name">CarbonApp</string>
+    <string name="search">Search by Author</string>
     <string name="type">Type:</string>
     <string name="id">ID:</string>
     <string name="url">Url:</string>
     <string name="login">Login</string>
     <string name="score">Score</string>
     <string name="confirm">Confirm</string>
-    <string name="cool">Cool</string>
+    <string name="read_more">Read more</string>
 </resources>

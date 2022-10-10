@@ -15,7 +15,9 @@ import javax.inject.Singleton
 
 @Module
 object ServiceModule {
-    private const val BASE_URL = "https://api.github.com/"
+    private const val BASE_URL = "https://newsapi.org/v2/"
+    val API_KEY = "2d021085c2e64c23927ff485d9f4299b"
+    val COUNTRY_CODE = "us"
 
     fun createDisputeApiService(): Api {
         return getRetrofitService().create(Api::class.java)

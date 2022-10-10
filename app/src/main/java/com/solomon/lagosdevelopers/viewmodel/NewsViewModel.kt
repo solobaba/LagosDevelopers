@@ -1,27 +1,32 @@
 package com.solomon.lagosdevelopers.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.google.gson.Gson
+import com.solomon.lagosdevelopers.db.NewsEntity
 import com.solomon.lagosdevelopers.model.repository.Repository
-import com.solomon.lagosdevelopers.model.response.DevelopersItem
-import com.solomon.lagosdevelopers.model.response.LagosDevelopersResponse
+import com.solomon.lagosdevelopers.model.response.*
 import com.solomon.lagosdevelopers.model.service.ServiceModule
-import com.solomon.lagosdevelopers.utils.Resource
 import com.solomon.lagosdevelopers.utils.ResponseFromServer
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-class DevelopersViewModel @Inject constructor(
+class NewsViewModel @Inject constructor(
     private val repository: Repository
     ) : ViewModel(), ViewModelHelpers {
 
+    private val _isLoading by lazy { MutableLiveData<Boolean>() }
+    val isLoading: LiveData<Boolean> by lazy { _isLoading }
+    val getAllNewsResponse = MutableLiveData<NewsResponse?>()
+
     private val _loading = MutableStateFlow(false)
-    private val _data = MutableStateFlow<Pair<List<DevelopersItem>, String?>>(Pair(emptyList(), null))
+    val loading = _loading.asStateFlow()
+    private val _data = MutableStateFlow<Pair<List<NewsEntity>, String?>>(Pair(emptyList(), null))
     val data = _data.asStateFlow()
 
-    private val error = MutableLiveData<Throwable?>()
+    val error = MutableLiveData<Throwable?>()
     val errorWatcher: LiveData<Throwable?>
         get() = error
 
@@ -29,19 +34,16 @@ class DevelopersViewModel @Inject constructor(
     val progressDialogLive: LiveData<Pair<Boolean, String>>
         get() = progressDialog
 
-    private var _movieResponse = MutableLiveData<List<DevelopersItem>>()
-    val movieResponse: LiveData<List<DevelopersItem>> = _movieResponse
+    //val getAllDevelopers = repository.getDevelopers().asLiveData()
 
-    val getAllDevelopers = repository.getDevelopers().asLiveData()
-
-    fun getAllCardTransactions(): LiveData<LagosDevelopersResponse?> {
-        val getAllCardTransactions = MutableLiveData<LagosDevelopersResponse?>()
+    fun getAllNews(): LiveData<NewsResponse?> {
+        val getAllNewsResponse = MutableLiveData<NewsResponse?>()
         viewModelScope.launch {
             try {
-                when (val response = repository.getLagosDevelopers(
+                when (val response = repository.getNews(
                 )) {
                     is ResponseFromServer.Success -> {
-                        getAllCardTransactions.value = response.data
+                        getAllNewsResponse.value = response.data
                     }
                     is ResponseFromServer.Error -> {
                         setError(throwable = Throwable(response.failureData.toString()))
@@ -54,27 +56,28 @@ class DevelopersViewModel @Inject constructor(
                 setError(throwable = ServiceModule.getUserFriendlyException(t))
             }
         }
-        return getAllCardTransactions
+        return getAllNewsResponse
     }
 
-    private fun getAllDevelopers() {
+    fun getAllNewsInfo() {
         viewModelScope.launch {
-            repository.getDevelopersInfo().collect {
-                _movieResponse.postValue(it)
-                Timber.tag("DevelopersList").e(Gson().toJson(it))
-            }
-//                .onStart {
-//                    _loading.value = true
-//                }.catch { e: Throwable ->
-//                    setNewsData(message = e.message ?: "Something went wrong.")
-//                }.collectLatest {
-//                    setNewsData(it)
-//                    Timber.tag("DevelopersList").e(it.toString())
-//                }
+//            repository.getNewsInfo().collect {
+//                _movieResponse.postValue(it)
+//                Timber.tag("DevelopersList").e(Gson().toJson(it))
+//            }
+            repository.getNewsInfo()
+                .onStart {
+                    _loading.value = true
+                }.catch { e: Throwable ->
+                    setNewsData(message = e.message ?: "Something went wrong.")
+                }.collectLatest {
+                    setNewsData(it)
+                    Timber.tag("Articles").e(it.toString())
+                }
         }
     }
 
-    private fun setNewsData(newsList: List<DevelopersItem> = emptyList(), message: String? = null) {
+    private fun setNewsData(newsList: List<NewsEntity> = emptyList(), message: String? = null) {
         _data.value = Pair(newsList, message)
         _loading.value = false
     }
@@ -86,5 +89,9 @@ class DevelopersViewModel @Inject constructor(
 
     override fun showProgress(show: Boolean, message: String) {
         progressDialog.value = Pair(show, message)
+    }
+
+    fun setLoadingState(state: Boolean) {
+        _isLoading.postValue(state)
     }
 }

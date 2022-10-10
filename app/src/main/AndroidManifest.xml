@@ -25,8 +25,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.ui.DeveloperDetailsActivity"
+        <activity android:name=".view.ui.NewsDetailActivity"
             android:parentActivityName=".view.ui.MainActivity"
-            android:screenOrientation="fullSensor"/>
+            android:screenOrientation="portrait"/>
     </application>
 </manifest>

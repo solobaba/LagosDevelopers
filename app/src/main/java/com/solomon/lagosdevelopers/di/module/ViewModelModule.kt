@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.solomon.lagosdevelopers.di.ViewModelFactory
 import com.solomon.lagosdevelopers.di.ViewModelKey
-import com.solomon.lagosdevelopers.viewmodel.DevelopersViewModel
+import com.solomon.lagosdevelopers.viewmodel.NewsViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -19,6 +19,6 @@ abstract class ViewModelModule {
     @Binds
     @IntoMap
     @Singleton
-    @ViewModelKey(DevelopersViewModel::class)
-    internal abstract fun bindDevelopersViewModel(viewModel: DevelopersViewModel): ViewModel
+    @ViewModelKey(NewsViewModel::class)
+    internal abstract fun bindDevelopersViewModel(viewModel: NewsViewModel): ViewModel
 }

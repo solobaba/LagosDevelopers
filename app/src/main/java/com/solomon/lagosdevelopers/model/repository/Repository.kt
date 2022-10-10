@@ -1,18 +1,16 @@
 package com.solomon.lagosdevelopers.model.repository
 
-import androidx.room.withTransaction
 import com.google.gson.Gson
-import com.solomon.lagosdevelopers.db.DevelopersDatabase
-import com.solomon.lagosdevelopers.model.response.DevelopersItem
-import com.solomon.lagosdevelopers.model.response.LagosDevelopersResponse
+import com.solomon.lagosdevelopers.db.NewsDatabase
+import com.solomon.lagosdevelopers.db.NewsEntity
+import com.solomon.lagosdevelopers.model.response.*
 import com.solomon.lagosdevelopers.model.service.Api
 import com.solomon.lagosdevelopers.model.service.ServiceModule
-import com.solomon.lagosdevelopers.utils.Resource
+import com.solomon.lagosdevelopers.model.service.ServiceModule.API_KEY
+import com.solomon.lagosdevelopers.model.service.ServiceModule.COUNTRY_CODE
 import com.solomon.lagosdevelopers.utils.ResponseFromServer
-import com.solomon.lagosdevelopers.utils.networkBoundResource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
@@ -22,52 +20,54 @@ import javax.inject.Inject
 
 class Repository @Inject constructor(
     private val api: Api,
-    private val db: DevelopersDatabase
+    db: NewsDatabase
     ) {
 
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
-    private val developersDao = db.developersDao()
+    private val newsDao = db.newsDao()
 
-    fun getDevelopers() = networkBoundResource(
-        query = {
-            developersDao.getDevelopers()
-        },
-        fetch = {
-            delay(2000)
-            api
-        },
-        saveFetchResult = { developers ->
-            db.withTransaction {
-                developersDao.deleteAllDevelopers()
-                developersDao.insertDevelopers(emptyList())
-            }
-        }
-    )
+//    fun getDevelopers() = networkBoundResource(
+//        query = {
+//            developersDao.getDevelopers()
+//        },
+//        fetch = {
+//            delay(2000)
+//            api
+//        },
+//        saveFetchResult = { developers ->
+//            db.withTransaction {
+//                developersDao.deleteAllDevelopers()
+//                developersDao.insertDevelopers(emptyList())
+//            }
+//        }
+//    )
 
-    fun getDevelopersInfo() = flow {
-        val result = api.fetchLagosDevelopers()
+    fun getNewsInfo() = flow {
+        val result = api.getTopHeadlinesTwo(COUNTRY_CODE, API_KEY)
 
-        //val c = result.items.count()
-        //Timber.tag("count").e(c.toString())
+        val c = result.articles.count()
+        Timber.tag("count").e(c.toString())
 
-        //val r = result.items.toNewsList()
-        //Timber.tag("result").e(Gson().toJson(r))
+        val r = result.articles.toNewsList()
+        Timber.tag("result").e(Gson().toJson(r))
 
-        //developersDao.insertDevelopers(r)
-        //Timber.tag("insert").e(Gson().toJson(r))
+        newsDao.insertNews(r)
+        Timber.tag("insert").e(Gson().toJson(r))
 
-        val devs = developersDao.getAllDevelopers()
-        emit(devs)
+        val news = newsDao.getAllNewsTwo()
+        emit(news)
     }.onStart {
-        val devs = developersDao.getAllDevelopers()
-        emit(devs)
+        val news = newsDao.getAllNewsTwo()
+        emit(news)
+    }.catch { e ->
+        e.printStackTrace()
     }
 
-    suspend fun getLagosDevelopers(): ResponseFromServer<LagosDevelopersResponse?> {
+    suspend fun getNews(): ResponseFromServer<NewsResponse?> {
         return withContext(coroutineDispatcher) {
             try {
                 val response = ServiceModule.createDisputeApiService()
-                    .fetchLagosDevelopers()
+                    .getTopHeadlines(COUNTRY_CODE, API_KEY)
                 val result = response.body()
                 if (response.isSuccessful && result != null) {
                     ResponseFromServer.Success(data = result)
@@ -80,19 +80,18 @@ class Repository @Inject constructor(
         }
     }
 
-    private fun List<DevelopersItem>.toNewsList() : List<DevelopersItem> {
-        val mutable = mutableListOf<DevelopersItem>()
+    private fun List<NewsData>.toNewsList() : List<NewsEntity> {
+        val mutable = mutableListOf<NewsEntity>()
         for (it in this) {
             mutable.add(
-                DevelopersItem(
-                    it.id,
-                    it.avatar_url.orEmpty(),
-                    it.url.orEmpty(),
-                    it.type.orEmpty()
-//                    developerID = it.id,
-//                    developerImage = it.avatar_url.orEmpty(),
-//                    developerUrl = it.url.orEmpty(),
-//                    developerType = it.type.orEmpty()
+                NewsEntity(
+                    author = it.author.orEmpty(),
+                    title = it.title.orEmpty(),
+                    description = it.description.orEmpty(),
+                    imageUrl = it.urlToImage.orEmpty(),
+                    content = it.content.orEmpty(),
+                    fullArticleUrl = it.url.orEmpty(),
+                    date = it.publishedAt.orEmpty()
                 )
             )
             Timber.tag("muta").e(mutable.toString())

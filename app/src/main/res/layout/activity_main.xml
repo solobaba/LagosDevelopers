@@ -7,7 +7,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/margin_top_frag_pg_20"
-    android:layout_margin="@dimen/margin_top_frag_pg_20"
     android:background="@color/white"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -36,7 +35,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_top_frag_pg_20"
-        android:layout_marginBottom="@dimen/margin_top_frag_pg_20"
         android:nestedScrollingEnabled="false"
         android:overScrollMode="never"
         app:layout_constraintEnd_toEndOf="parent"

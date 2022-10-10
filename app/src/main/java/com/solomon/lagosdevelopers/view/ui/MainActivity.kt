@@ -8,18 +8,16 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.solomon.lagosdevelopers.R
 import com.solomon.lagosdevelopers.databinding.ActivityMainBinding
-import com.solomon.lagosdevelopers.model.response.DevelopersItem
+import com.solomon.lagosdevelopers.model.response.NewsData
 import com.solomon.lagosdevelopers.utils.NetworkUtils
-import com.solomon.lagosdevelopers.utils.Resource
 import com.solomon.lagosdevelopers.view.adapter.DevelopersAdapter
-import com.solomon.lagosdevelopers.viewmodel.DevelopersViewModel
+import com.solomon.lagosdevelopers.viewmodel.NewsViewModel
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
@@ -31,17 +29,16 @@ class MainActivity : AppCompatActivity() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     val viewModel by lazy {
-        ViewModelProvider(this, viewModelFactory)[DevelopersViewModel::class.java]
+        ViewModelProvider(this, viewModelFactory)[NewsViewModel::class.java]
     }
 
     private lateinit var developersAdapter: DevelopersAdapter
-    private var developersItem: MutableList<DevelopersItem> = ArrayList()
-    private var position: Int = 0
+    private var developersItem: MutableList<NewsData> = ArrayList()
 
     private val mProgressDialog by lazy {
         val myDialog = ProgressDialog(this)
         myDialog.setMessage("Fetching...")
-        myDialog.setTitle("Lagos Devs")
+        myDialog.setTitle("News")
         myDialog.setCancelable(false)
         myDialog.setButton(
             DialogInterface.BUTTON_NEGATIVE,
@@ -63,7 +60,8 @@ class MainActivity : AppCompatActivity() {
         developersAdapter = DevelopersAdapter()
         developersRecyclerList.adapter = developersAdapter
 
-        fetchDevelopersList()
+        fetchNewsList()
+        //fetchNewsInfo()
 
         viewModel.errorWatcher.observe(this, Observer {
             it?.printStackTrace()
@@ -72,7 +70,31 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun fetchDevelopersList() {
+    private fun fetchNewsInfo(
+        //article: (Article) -> Unit
+    ) {
+        mProgressDialog.show()
+        viewModel.getAllNewsInfo()
+        Toast.makeText(this, "roommm", Toast.LENGTH_SHORT).show()
+        mProgressDialog.dismiss()
+
+//        when {
+//            viewModel.data.value.first.isNotEmpty() -> {
+//                developersItem.clear()
+//                result?.newsData?.let {
+//                    developersItem.addAll(it)
+//                    developersAdapter.submitList(developersItem)
+//                    Timber.e(result.toString())
+//                }
+//                article(it)
+//            }
+//            !data.second.isNullOrEmpty() -> ErrorView(data.second!!) {
+//                //postIntent(Retry)
+//            }
+//        }
+    }
+
+    private fun fetchNewsList() {
         if (!NetworkUtils.isConnectionAvailable(this)) {
             val snackBar: Snackbar = Snackbar.make(
                 developersListLayout,
@@ -83,26 +105,24 @@ class MainActivity : AppCompatActivity() {
             snackBar.setActionTextColor(ContextCompat.getColor(this, R.color.white))
             snackBar.setBackgroundTint(ContextCompat.getColor(this, R.color.red))
             snackBar.setAction("Okay") {
-                fetchDevelopersList()
+                fetchNewsList()
                 snackBar.dismiss()
             }
             snackBar.show()
         } else {
             mProgressDialog.show()
-
-            viewModel.getAllCardTransactions().observe(this, Observer { result ->
-                Toast.makeText(this, "hereeee", Toast.LENGTH_LONG).show()
+            viewModel.getAllNews().observe(this, Observer { result ->
                 mProgressDialog.dismiss()
                 when {
-                    !result?.items.isNullOrEmpty() -> {
+                    !result?.articles.isNullOrEmpty() -> {
                         developersItem.clear()
-                        result?.items?.let {
+                        result?.articles?.let {
                             developersItem.addAll(it)
-                            developersAdapter.submitList(developersItem)  //updateList(developersItem)
+                            developersAdapter.submitList(developersItem)
                             Timber.e(result.toString())
                         }
                     }
-                    result?.items?.isEmpty() == true -> {
+                    result?.articles?.isEmpty() == true -> {
                         mProgressDialog.dismiss()
                         val response = result
                         val snackBar: Snackbar = Snackbar.make(
@@ -138,7 +158,7 @@ class MainActivity : AppCompatActivity() {
 
                     override fun afterTextChanged(s: Editable) {
                         try {
-                            filter(s.toString(), result?.items ?: emptyList())
+                            filter(s.toString(), (((result?.articles ?: emptyList()))))
                         } catch (e: Throwable) {
                         }
                     }
@@ -147,12 +167,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun filter(text: String?, data: List<DevelopersItem>) {
+    fun filter(text: String?, data: List<NewsData>) {
         if (::developersAdapter.isInitialized) {
-            val temp: MutableList<DevelopersItem> = ArrayList()
+            val temp: MutableList<NewsData> = ArrayList()
             for (items in data) {
-                if (items.id.toString().lowercase(Locale.getDefault()).contains(text.toString()) ||
-                    items.id.toString().uppercase(Locale.getDefault()).contains(text.toString())
+                if (items.author.toString().lowercase(Locale.getDefault()).contains(text.toString()) ||
+                    items.author.toString().uppercase(Locale.getDefault()).contains(text.toString())
                 ) {
                     temp.add(items)
                 }
